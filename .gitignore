@@ -1,0 +1,19 @@
+# 빌드 결과물 무시
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+
+# 플랫폼별 임시 파일
+.vs/
+*.VC.db
+*.opensdf
+*.sdf
+
+# 기타
+*.log
+*.tmp
+*.user
+*.suo
+*.DS_Store
+Thumbs.db
