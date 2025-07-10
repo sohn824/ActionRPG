@@ -17,3 +17,12 @@ DerivedDataCache/
 *.suo
 *.DS_Store
 Thumbs.db
+
+# InfinityBladeWeapons 애셋
+ActionRPG/Content/InfinityBladeWeapons
+# ParagonGreyStone 애셋
+ActionRPG/Content/ParagonGreystone
+
+# ThirdPerson 기본 애셋
+ActionRPG/Content/StarterContent
+ActionRPG/Content/ThirdPerson
