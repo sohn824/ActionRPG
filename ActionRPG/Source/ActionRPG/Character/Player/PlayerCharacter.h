@@ -25,30 +25,43 @@ public:
 	APlayerCharacter();
 
 protected:
-	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void Attack(const FInputActionValue& Value);
 
 private:
-	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
-
+	USpringArmComponent* CameraBoom = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
-
+	UCameraComponent* FollowCamera = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputMappingContext* InputMappingContext;
-
+	UInputMappingContext* InputMappingContext = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* JumpAction = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* AttackAction = nullptr;
+
+	/* Combo System */
+protected:
+	void StartComboSection();
+	FName GetComboSectionName(const int32& ComboIndex) const;
+	void ComboActionEndCallback(class UAnimMontage* TargetMontage, bool bIsProperlyEnded);
+	void ComboTimerCallback();
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Combat|Montage")
+	UAnimMontage* AttackMontage = nullptr;
+
+	int32           CurrentComboIndex = 0;
+	int32			MaxComboCount = 4;
+	FTimerHandle	ComboTimerHandle;
+	bool			bIsAttacking = false;
+	bool            bNextComboReserved = false;
 };
