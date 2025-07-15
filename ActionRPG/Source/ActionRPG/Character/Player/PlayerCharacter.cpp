@@ -10,6 +10,7 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "Camera/CameraComponent.h"
+#include "Engine/DamageEvents.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -161,6 +162,12 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::Attack(const FInputActionValue& Value)
 {
+	// 공중 공격 불가
+	if (GetCharacterMovement()->IsFalling())
+	{
+		return;
+	}
+
 	// 아직 공격 시작 안했으면 콤보 시작
 	if (bIsAttacking == false)
 	{
@@ -248,4 +255,44 @@ void APlayerCharacter::ComboTimerCallback()
 
 		bNextComboReserved = false;
 	}
+}
+
+// 공격 판정을 하는 Animation Notify에서 호출될 콜백 함수
+void APlayerCharacter::Notify_AttackHitCheck()
+{
+	// 충돌 지점과 해당 지점에서의 여러 정보를 포함하는 구조체
+	// SweepSingleByChannel()과 같은 함수에 전달하면 충돌 판정을 하고 관련 정보를 반환함
+	FHitResult OutHitResult;
+
+	// 충돌 함수에 전달되는 매개변수 구조체
+	FCollisionQueryParams CollisionParams(SCENE_QUERY_STAT(Attack), false, this);
+
+	const float AttackRange = 100.0f;
+	const float AttackDamage = 100.0f;
+	const FVector StartPos = GetActorLocation()
+		+ GetActorForwardVector() * GetCapsuleComponent()->GetScaledCapsuleRadius();
+	const FVector EndPos = StartPos + GetActorForwardVector() * AttackRange;
+
+	// 특정 채널을 사용하여 충돌 검사를 수행
+	// StartPos에서 EndPos까지 지정된 충돌체를 이동시키면서 충돌을 감지하고
+	// FHitResult 구조체에 충돌 관련 정보들을 담아 반환함
+	const float AttackRadius = 50.0f;
+	bool bHitSucceed = GetWorld()->SweepSingleByChannel(OutHitResult, StartPos, EndPos,
+		FQuat::Identity, ECC_GameTraceChannel1, FCollisionShape::MakeSphere(AttackRadius), CollisionParams);
+	if (bHitSucceed)
+	{
+		FDamageEvent DamageEvent;
+		// 맞은 액터의 TakeDamage 함수 호출
+		OutHitResult.GetActor()->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
+	}
+
+#ifdef ENABLE_DRAW_DEBUG
+	// 충돌 디버깅용
+	FVector CapsuleOrigin = StartPos + (EndPos - StartPos) * 0.5f;
+	const float CapsuleHalfHeight = AttackRange * 0.5f;
+	FColor DrawColor = bHitSucceed ? FColor::Green : FColor::Red;
+
+	DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius,
+		FRotationMatrix::MakeFromZ(GetActorForwardVector()).ToQuat(), DrawColor, false, 5.f);
+#endif //ENABLE_DRAW_DEBUG
 }

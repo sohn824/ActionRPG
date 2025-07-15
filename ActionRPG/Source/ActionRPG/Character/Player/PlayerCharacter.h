@@ -55,9 +55,13 @@ protected:
 	void ComboActionEndCallback(class UAnimMontage* TargetMontage, bool bIsProperlyEnded);
 	void ComboTimerCallback();
 
+public:
+	// 공격 판정을 하는 Animation Notify에서 호출될 콜백 함수
+	void Notify_AttackHitCheck();
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Combat|Montage")
-	UAnimMontage* AttackMontage = nullptr;
+	UAnimMontage*	AttackMontage = nullptr;
 
 	int32           CurrentComboIndex = 0;
 	int32			MaxComboCount = 4;
