@@ -61,8 +61,7 @@ void UCharacterStatComponent::SetCurrentHp(float NewHp)
 {
 	CurrentHp = FMath::Clamp(NewHp, 0, MaxHp);
 
-	const float CurrentHpPercent = CurrentHp / MaxHp;
-	OnHPChanged.Broadcast(CurrentHpPercent);
+	OnHPChanged.Broadcast(CurrentHp, MaxHp);
 }
 
 const float UCharacterStatComponent::GetAttackPower() const

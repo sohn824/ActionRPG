@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "CharacterStatComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHPChanged, float, HPPercent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHPChanged, float, CurrentHp, float, MaxHp);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDieParent);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
